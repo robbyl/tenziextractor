@@ -73,41 +73,24 @@ if (!empty($_POST['verses'])) {
             $file_path = $path . '\\' . $name;
 
             $html = file_get_html($file_path);
+            $index = 1;
 
             foreach ($html->find('#tenzi > p') as $element) {
-                
-                $index = 1;
-                
-                $verse_text = str_get_html($element->innertext);
-                
-                if (!empty($verse_text)) {
-                    
-                            $verse_no = $index;
-                            $verse_id = $title_no.str_pad($verse_no, 3, "0", STR_PAD_LEFT); 
-                            
-                            $part = $part . "({$verse_id}, {$title_no}, {$verse_no}, {$verse_text}),";
-                            
 
-//                    for ($index = 0; $index < count($final); $index++) {
-//                        echo ($index + 1) . " " . $final[$index] . "<br/>";
-//                        $key = $index + 1;
-//                        $book1 = str_pad($book, 2, "0", STR_PAD_LEFT);
-//                        $chapter1 = str_pad($chapter, 3, "0", STR_PAD_LEFT);
-//                        $key1 = str_pad($key, 3, "0", STR_PAD_LEFT);
-//
-//                        $trimed_verse = trim($final[$index]);
-//                        $part = $part . "({$book1}{$chapter1}{$key1},{$book}, {$chapter}, {$key}, \"{$trimed_verse}\"),";
-//                    }
+                $verse_text = str_get_html($element->innertext);
+                $verse_text = SQLite3::escapeString($verse_text);
+
+                if (!empty($verse_text)) {
+
+                    $verse_no = $index;
+                    $verse_id = $title_no . str_pad($verse_no, 3, "0", STR_PAD_LEFT);
+
+                    $part = $part . "({$verse_id}, {$title_no}, {$verse_no}, '{$verse_text}'),";
+                    $index++;
                 }
-                
-                
             }
-            echo $part;
-            exit;
         }
     }
-
-    exit;
 
     $build_query = "INSERT INTO verses (id, title_no, verse_no, verse_text) VALUES " . substr(trim($part), 0, -1);
     $db->exec($build_query);
