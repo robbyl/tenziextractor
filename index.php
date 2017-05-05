@@ -12,8 +12,8 @@ $db = new MyDB();
 
 if (!empty($_POST['titles'])) {
 
-    $db->exec("DROP TABLE IF EXISTS keys");
-    $sql = 'CREATE TABLE "keys" (
+    $db->exec("DROP TABLE IF EXISTS songs");
+    $sql = 'CREATE TABLE "songs" (
   "title_no" integer PRIMARY KEY NOT NULL,
   "title" text NOT NULL)';
 
@@ -38,7 +38,7 @@ if (!empty($_POST['titles'])) {
         }
     }
 
-    $build_titles = "INSERT INTO keys (title_no, title) VALUES " . substr(trim($verseQ), 0, -1);
+    $build_titles = "INSERT INTO songs (title_no, title) VALUES " . substr(trim($verseQ), 0, -1);
 
     $db->exec($build_titles);
 
