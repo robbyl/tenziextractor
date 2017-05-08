@@ -78,6 +78,9 @@ if (!empty($_POST['verses'])) {
             foreach ($html->find('#tenzi > p') as $element) {
 
                 $verse_text = str_get_html($element->innertext);
+                $verse_text = preg_replace('/^(\d+)./m', '<font color="#FF6F00">$1. </font>', $verse_text);
+                $verse_text = str_replace("<em>", '<em><font color="#7e8acd">', $verse_text);
+                $verse_text = str_replace("</em>", "</font></em>", $verse_text);
                 $verse_text = SQLite3::escapeString($verse_text);
 
                 if (!empty($verse_text)) {
