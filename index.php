@@ -11,25 +11,35 @@ include './simple_html_dom.php';
 $db = new MyDB();
 
 if (!empty($_POST['titles'])) {
-    
+
     $has_audio = array(10, 101, 102, 103, 106, 108, 11, 112, 113, 116, 117, 118,
         121, 125, 126, 129, 13, 130, 135, 136, 14, 15, 16, 17, 19, 2, 23, 24, 25,
         26, 28, 29, 3, 31, 34, 36, 4, 40, 41, 42, 43, 44, 45, 46, 47, 49, 50, 51,
         52, 54, 56, 57, 58, 59, 6, 60, 61, 64, 68, 69, 7, 70, 71, 74, 75, 76, 77,
         78, 8, 80, 82, 84, 85, 86, 87, 88, 89, 9, 90, 91, 92, 93, 94, 95, 96, 97);
 
-   $db->exec("DROP TABLE IF EXISTS songs");
+    $number_color = array(
+        "#bd4444", "#499067", "#eb9736", "#b74a8e", "#399ca4", "#9f6acc"
+    );
+
+    $bg_color = array(
+        "#fad2cf", "#d5ebdf", "#feefc3", "#fdcfe8", "#cbf0f8", "#e9d2fd"
+    );
+
+    $db->exec("DROP TABLE IF EXISTS songs");
     $sql = 'CREATE TABLE "songs" (
   "title_no" INTEGER PRIMARY KEY NOT NULL,
   "title" TEXT NOT NULL,
-  "has_audio" TINYINT DEFAULT 0)';
+  "has_audio" TINYINT DEFAULT 0,
+  "number_color" TEXT NOT NULL,
+  "number_bg_color" TEXT NOT NULL)';
 
     $verseQ = "";
     $db->exec($sql);
 
     echo "Importing song titles <br/>";
 
-    $html = file_get_html("C:/xampp/htdocs/tenziextractor/index.html");
+    $html = file_get_html("C:/xampp-backup/htdocs/tenziextractor/index.html");
 
     foreach ($html->find('ul.book_open') as $ul) {
         foreach ($ul->find('a') as $li) {
@@ -41,11 +51,15 @@ if (!empty($_POST['titles'])) {
             $title = $title_explode[0];
 
 //            echo $title_no . " " . $title . "<br/>";
-             $verseQ = $verseQ . '("' . $title_no . '","' . $title . '",' . (in_array($title_no, $has_audio) ? 1 : 0) . '),';
+            $m = rand(0, 5);
+            $verseQ = $verseQ . '("' . $title_no . '","' . $title . '",'
+                    . (in_array($title_no, $has_audio) ? 1 : 0) . ',"'
+                    . $number_color[$m] . '","'
+                    . $bg_color[$m] . '"' . '),';
         }
     }
 
-    $build_titles = "INSERT INTO songs (title_no, title, has_audio) VALUES " . substr(trim($verseQ), 0, -1);
+    $build_titles = "INSERT INTO songs (title_no, title, has_audio, number_color, number_bg_color) VALUES " . substr(trim($verseQ), 0, -1);
 
     $db->exec($build_titles);
 
